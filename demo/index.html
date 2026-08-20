@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pyliner Web Component Demo</title>
+    <script type="module" src="./pyliner-web.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #f5f7fb;
+        color: #162033;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+      }
+
+      main {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 56px 24px;
+      }
+
+      header {
+        padding-bottom: 32px;
+        border-bottom: 1px solid #d9deea;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(2rem, 6vw, 4rem);
+        font-weight: 760;
+        line-height: 1;
+      }
+
+      p {
+        max-width: 680px;
+        margin: 0 0 20px;
+        color: #44516a;
+        font-size: 1.05rem;
+        line-height: 1.65;
+      }
+
+      a,
+      button {
+        color: #b95500;
+        font: inherit;
+        font-weight: 700;
+      }
+
+      button {
+        border: 1px solid #d97706;
+        border-radius: 6px;
+        background: white;
+        padding: 10px 14px;
+        cursor: pointer;
+      }
+
+      section {
+        padding: 32px 0;
+      }
+
+      code {
+        border-radius: 4px;
+        background: #e9edf5;
+        padding: 2px 5px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <pyliner-overlay
+      lines="3"
+      history="150"
+      speed="30"
+      thickness="3"
+      overlay-width="50vw"
+      overlay-height="50vh"
+      overlay-left="50vw"
+      overlay-top="50vh"
+    ></pyliner-overlay>
+    <script>
+      const overlay = document.querySelector("pyliner-overlay");
+
+      /** Render the controls and short usage description for the demo. */
+      function App() {
+        return React.createElement(
+          "main",
+          null,
+          React.createElement(
+            "header",
+            null,
+            React.createElement("h1", null, "Pyliner"),
+            React.createElement(
+              "p",
+              null,
+              "This static React demo embeds the Pyliner overlay as a reusable Web Component.",
+            ),
+            React.createElement(
+              "p",
+              { className: "actions" },
+              React.createElement(
+                "a",
+                {
+                  href: "#start-pyliner",
+                  onClick: (event) => {
+                    event.preventDefault();
+                    overlay.start();
+                  },
+                },
+                "Start the overlay",
+              ),
+              React.createElement(
+                "button",
+                {
+                  type: "button",
+                  onClick: () => overlay.start(),
+                },
+                "Start with button",
+              ),
+            ),
+          ),
+          React.createElement(
+            "section",
+            null,
+            React.createElement(
+              "p",
+              null,
+              "Press ",
+              React.createElement("code", null, "Ctrl+Alt+P"),
+              " to launch the overlay as an Easter egg. Click the overlay or press ",
+              React.createElement("code", null, "Esc"),
+              " to close it.",
+            ),
+            React.createElement(
+              "p",
+              null,
+              "While the overlay is running, use ",
+              React.createElement("code", null, "q/a"),
+              " for line count, ",
+              React.createElement("code", null, "w/s"),
+              " for speed, ",
+              React.createElement("code", null, "e/d"),
+              " for thickness, and ",
+              React.createElement("code", null, "f"),
+              " for fullscreen. Press ",
+              React.createElement("code", null, "h"),
+              " for help.",
+            ),
+          ),
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+    </script>
+  </body>
+</html>
