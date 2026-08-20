@@ -1,12 +1,12 @@
 """
-Tests for the Pyliner animation engine.
+Tests for the Myliner animation engine.
 """
 
 import pytest
 import numpy as np
 
-from pyliner import PylinerEngine, PylinerSettings
-from pyliner.engine import DEFAULT_HISTORY, next_fibonacci_speed, previous_fibonacci_speed
+from myliner import MylinerEngine, MylinerSettings
+from myliner.engine import DEFAULT_HISTORY, next_fibonacci_speed, previous_fibonacci_speed
 
 
 def test_engine_rejects_too_small_canvas() -> None:
@@ -15,7 +15,7 @@ def test_engine_rejects_too_small_canvas() -> None:
     """
 
     with pytest.raises(ValueError, match="at least 2"):
-        PylinerSettings(1, 10)
+        MylinerSettings(1, 10)
 
 
 def test_engine_uses_required_default_history() -> None:
@@ -23,7 +23,7 @@ def test_engine_uses_required_default_history() -> None:
     It uses the required default line history.
     """
 
-    assert PylinerSettings(20, 10).history == DEFAULT_HISTORY == 150
+    assert MylinerSettings(20, 10).history == DEFAULT_HISTORY == 150
 
 
 def test_engine_rejects_invalid_speed() -> None:
@@ -32,7 +32,7 @@ def test_engine_rejects_invalid_speed() -> None:
     """
 
     with pytest.raises(ValueError, match="speed"):
-        PylinerSettings(20, 10, speed=0)
+        MylinerSettings(20, 10, speed=0)
 
 
 def test_engine_accepts_high_speed_without_fixed_cap() -> None:
@@ -40,7 +40,7 @@ def test_engine_accepts_high_speed_without_fixed_cap() -> None:
     It does not enforce a fixed upper speed cap.
     """
 
-    assert PylinerSettings(20, 10, speed=1597).speed == 1597
+    assert MylinerSettings(20, 10, speed=1597).speed == 1597
 
 
 def test_fibonacci_speed_steps_move_to_neighboring_values() -> None:
@@ -62,7 +62,7 @@ def test_engine_rejects_too_many_lines() -> None:
     """
 
     with pytest.raises(ValueError, match="line_count"):
-        PylinerSettings(20, 10, line_count=21)
+        MylinerSettings(20, 10, line_count=21)
 
 
 def test_engine_rejects_invalid_thickness() -> None:
@@ -71,7 +71,7 @@ def test_engine_rejects_invalid_thickness() -> None:
     """
 
     with pytest.raises(ValueError, match="thickness"):
-        PylinerSettings(20, 10, thickness=0)
+        MylinerSettings(20, 10, thickness=0)
 
 
 def test_step_draws_frame_and_moves_points() -> None:
@@ -79,7 +79,7 @@ def test_step_draws_frame_and_moves_points() -> None:
     It renders a line frame and advances endpoints.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10), seed=1)
+    engine = MylinerEngine(MylinerSettings(20, 10), seed=1)
     previous_points = engine.line_points
     frames = engine.step()
 
@@ -95,7 +95,7 @@ def test_step_can_skip_frame_objects_for_realtime_rendering() -> None:
     It can update the framebuffer without returning line frame objects.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10), seed=1)
+    engine = MylinerEngine(MylinerSettings(20, 10), seed=1)
 
     frames = engine.step(return_frames=False)
 
@@ -109,8 +109,8 @@ def test_step_applies_line_thickness() -> None:
     It expands rendered line pixels by the configured thickness.
     """
 
-    thin_engine = PylinerEngine(PylinerSettings(20, 10, thickness=1), seed=1)
-    thick_engine = PylinerEngine(PylinerSettings(20, 10, thickness=3), seed=1)
+    thin_engine = MylinerEngine(MylinerSettings(20, 10, thickness=1), seed=1)
+    thick_engine = MylinerEngine(MylinerSettings(20, 10, thickness=3), seed=1)
 
     thin_frame = thin_engine.step()[0]
     thick_frame = thick_engine.step()[0]
@@ -127,8 +127,8 @@ def test_history_removal_reduces_brightness_to_default() -> None:
     It removes old line brightness without going below the default value.
     """
 
-    engine = PylinerEngine(
-        PylinerSettings(2, 2, history=1, intensity_step=100, thickness=1),
+    engine = MylinerEngine(
+        MylinerSettings(2, 2, history=1, intensity_step=100, thickness=1),
         seed=3,
     )
 
@@ -146,7 +146,7 @@ def test_history_is_kept_per_line() -> None:
     It keeps the configured history length for each animated line.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, line_count=3, history=2), seed=5)
+    engine = MylinerEngine(MylinerSettings(20, 10, line_count=3, history=2), seed=5)
 
     engine.step()
     engine.step()
@@ -160,7 +160,7 @@ def test_line_count_can_change_at_runtime_with_limits() -> None:
     It adds and removes animated lines within the configured runtime limits.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, line_count=1), seed=6)
+    engine = MylinerEngine(MylinerSettings(20, 10, line_count=1), seed=6)
 
     assert engine.current_line_count == 1
     assert not engine.remove_line()
@@ -180,7 +180,7 @@ def test_runtime_thickness_applies_to_new_frames() -> None:
     It changes the thickness used for newly rendered frames.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, thickness=1), seed=1)
+    engine = MylinerEngine(MylinerSettings(20, 10, thickness=1), seed=1)
     thin_frame = engine.step()[0]
 
     engine.set_thickness(3)
@@ -194,7 +194,7 @@ def test_removing_line_deletes_its_history_immediately() -> None:
     It removes visible history for the removed line immediately.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, line_count=2, history=2), seed=7)
+    engine = MylinerEngine(MylinerSettings(20, 10, line_count=2, history=2), seed=7)
 
     engine.step()
     engine.step()
@@ -213,7 +213,7 @@ def test_removing_lines_rebuilds_framebuffer_without_visual_ghosts() -> None:
     It clears render-state leftovers when reducing multiple lines back to one.
     """
 
-    engine = PylinerEngine(PylinerSettings(60, 30, line_count=1, history=3), seed=9)
+    engine = MylinerEngine(MylinerSettings(60, 30, line_count=1, history=3), seed=9)
     assert engine.add_line()
     assert engine.add_line()
 
@@ -246,8 +246,8 @@ def test_rgb_rows_use_line_color_scaled_by_brightness() -> None:
     It converts brightness values to RGB colors.
     """
 
-    settings = PylinerSettings(3, 3, color=(255, 128, 0), intensity_step=255, thickness=1)
-    engine = PylinerEngine(settings, seed=4)
+    settings = MylinerSettings(3, 3, color=(255, 128, 0), intensity_step=255, thickness=1)
+    engine = MylinerEngine(settings, seed=4)
 
     engine.step()
     rows = engine.rgb_rows()
@@ -263,7 +263,7 @@ def test_rgb_bytes_use_black_background_and_orange_default_line() -> None:
     It renders only covered pixels with the base color at default brightness.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, thickness=1), seed=1)
+    engine = MylinerEngine(MylinerSettings(20, 10, thickness=1), seed=1)
 
     engine.step()
     rgb_bytes = engine.rgb_bytes()
@@ -283,7 +283,7 @@ def test_rgb_buffer_fades_without_underflow() -> None:
     It darkens old framebuffer pixels without wrapping below black.
     """
 
-    engine = PylinerEngine(PylinerSettings(20, 10, history=150), seed=1)
+    engine = MylinerEngine(MylinerSettings(20, 10, history=150), seed=1)
     engine.rgb_buffer[0:3] = [2, 1, 0]
 
     engine._fade_rgb_buffer()  # pylint: disable=protected-access
@@ -296,7 +296,7 @@ def test_removing_history_does_not_repaint_covered_pixels() -> None:
     It does not brighten faded pixels when old overlapping history expires.
     """
 
-    engine = PylinerEngine(PylinerSettings(4, 4, intensity_step=12), seed=1)
+    engine = MylinerEngine(MylinerSettings(4, 4, intensity_step=12), seed=1)
     pixel_indexes = np.array([0], dtype=np.intp)
     engine._coverage[pixel_indexes] = 2  # pylint: disable=protected-access
     engine._brightness[pixel_indexes] = 24  # pylint: disable=protected-access

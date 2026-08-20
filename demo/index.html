@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pyliner Web Component Demo</title>
-    <script type="module" src="./pyliner-web.js"></script>
+    <title>Myliner Web Component Demo</title>
+    <script type="module" src="./myliner-web.js"></script>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <style>
@@ -82,7 +82,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <pyliner-overlay
+    <myliner-overlay
       lines="3"
       history="150"
       speed="30"
@@ -91,9 +91,9 @@
       overlay-height="50vh"
       overlay-left="50vw"
       overlay-top="50vh"
-    ></pyliner-overlay>
+    ></myliner-overlay>
     <script>
-      const overlay = document.querySelector("pyliner-overlay");
+      const overlay = document.querySelector("myliner-overlay");
 
       /** Render the controls and short usage description for the demo. */
       function App() {
@@ -103,11 +103,11 @@
           React.createElement(
             "header",
             null,
-            React.createElement("h1", null, "Pyliner"),
+            React.createElement("h1", null, "Myliner"),
             React.createElement(
               "p",
               null,
-              "This static React demo embeds the Pyliner overlay as a reusable Web Component.",
+              "This static React demo embeds the Myliner overlay as a reusable Web Component.",
             ),
             React.createElement(
               "p",
@@ -115,7 +115,7 @@
               React.createElement(
                 "a",
                 {
-                  href: "#start-pyliner",
+                  href: "#start-myliner",
                   onClick: (event) => {
                     event.preventDefault();
                     overlay.start();

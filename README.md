@@ -1,6 +1,6 @@
-# Pyliner
+# Myliner
 
-Pyliner draws animated lines between moving points. Intersections become brighter, while older
+Myliner draws animated lines between moving points. Intersections become brighter, while older
 traces fade to black. The project provides a Python engine, a Pygame application, a browser Web
 Component, and a VS Code Explorer view.
 
@@ -10,7 +10,7 @@ Component, and a VS Code Explorer view.
 - One to 20 independent lines with configurable history and thickness.
 - Orange (`#ff6600`) as the base color.
 - Windowed and fullscreen Pygame rendering.
-- Reusable `<pyliner-overlay>` Web Component.
+- Reusable `<myliner-overlay>` Web Component.
 - Compact VS Code Explorer integration.
 
 ## Installation
@@ -24,9 +24,9 @@ POETRY_VIRTUALENVS_IN_PROJECT=true poetry install --extras dev
 ## Desktop Application
 
 ```bash
-poetry run pyliner
-poetry run pyliner --lines 4 --history 80 --speed 10 --thickness 3
-poetry run pyliner --fullscreen
+poetry run myliner
+poetry run myliner --lines 4 --history 80 --speed 10 --thickness 3
+poetry run myliner --fullscreen
 ```
 
 Options:
@@ -51,9 +51,9 @@ Runtime controls:
 The engine can also be embedded directly:
 
 ```python
-from pyliner import PylinerEngine, PylinerSettings
+from myliner import MylinerEngine, MylinerSettings
 
-engine = PylinerEngine(PylinerSettings(800, 450, line_count=2), seed=42)
+engine = MylinerEngine(MylinerSettings(800, 450, line_count=2), seed=42)
 frames = engine.step()
 brightness = engine.brightness
 ```
@@ -63,7 +63,7 @@ brightness = engine.brightness
 Start the local server:
 
 ```bash
-poetry run pyliner-web --port 8000
+poetry run myliner-web --port 8000
 ```
 
 Open `http://127.0.0.1:8000/demo/index.html` and stop the server with `Ctrl+C`. The React demo
@@ -78,8 +78,8 @@ Server options:
 Minimal embedding example:
 
 ```html
-<script type="module" src="./pyliner-web.js"></script>
-<pyliner-overlay
+<script type="module" src="./myliner-web.js"></script>
+<myliner-overlay
   lines="3"
   history="150"
   speed="30"
@@ -88,7 +88,7 @@ Minimal embedding example:
   overlay-height="50vh"
   overlay-left="50vw"
   overlay-top="50vh"
-></pyliner-overlay>
+></myliner-overlay>
 ```
 
 The component supports these attributes:
@@ -107,36 +107,36 @@ switches both the browser and component fullscreen state.
 
 ## VS Code Extension
 
-The extension in `vscode-extension/` adds a collapsible Pyliner Webview to the Explorer. It does
+The extension in `vscode-extension/` adds a collapsible Myliner Webview to the Explorer. It does
 not replace the Explorer, create an Activity Bar container, open an editor tab, or register keyboard
 shortcuts. The transparent, frameless view starts with two lines, speed `10`, thickness `1`, and
 endpoint offsets from `1` to `10` pixels.
 
 Four title buttons remove or add a line and decrease or increase speed. The same actions and
-`Pyliner: Show Panel` are available from the Command Palette.
+`Myliner: Show Panel` are available from the Command Palette.
 
 Install the source locally on Linux:
 
 ```bash
-mkdir -p ~/.vscode/extensions/pyliner-vscode
-rsync -a vscode-extension/ ~/.vscode/extensions/pyliner-vscode/
+mkdir -p ~/.vscode/extensions/myliner-vscode
+rsync -a vscode-extension/ ~/.vscode/extensions/myliner-vscode/
 ```
 
-Reload VS Code, then expand Pyliner in the Explorer or run `Pyliner: Show Panel`.
+Reload VS Code, then expand Myliner in the Explorer or run `Myliner: Show Panel`.
 
 Build and install a VSIX without global npm packages:
 
 ```bash
 cd vscode-extension
 npm exec --yes @vscode/vsce -- package
-code --install-extension pyliner-vscode-*.vsix
+code --install-extension myliner-vscode-*.vsix
 ```
 
 ## Architecture
 
-The core workflow is described in [docs/pyliner-core.md](docs/pyliner-core.md).
+The core workflow is described in [docs/myliner-core.md](docs/myliner-core.md).
 
-![Pyliner core workflow](docs/pyliner-core.drawio.svg)
+![Myliner core workflow](docs/myliner-core.drawio.svg)
 
 ## Development
 
@@ -150,4 +150,4 @@ The suite checks Poetry metadata, formatting, linting, types, tests, and at leas
 
 ## License
 
-Pyliner is released under the MIT License. See `LICENSE`.
+Myliner is released under the MIT License. See `LICENSE`.

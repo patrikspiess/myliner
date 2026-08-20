@@ -124,7 +124,7 @@ function previousFibonacciSpeed(speed) {
 }
 
 /**
- * Parse a hex RGB color attribute and fall back to Pyliner orange.
+ * Parse a hex RGB color attribute and fall back to Myliner orange.
  */
 function parseColor(value) {
   if (!value) {
@@ -195,9 +195,9 @@ function randomLine(width, height, lineId, offsetMinimum, offsetMaximum) {
 }
 
 /**
- * Web Component that renders Pyliner in a bounded canvas.
+ * Web Component that renders Myliner in a bounded canvas.
  */
-export class PylinerOverlay extends HTMLElement {
+export class MylinerOverlay extends HTMLElement {
   /** Create the canvas, framebuffer state, and bound event handlers. */
   constructor() {
     super();
@@ -397,7 +397,7 @@ export class PylinerOverlay extends HTMLElement {
   toggleHelp() {
     this.help.hidden = !this.help.hidden;
     if (!this.keyboardControls) {
-      this.help.textContent = "Use the Pyliner view menu for controls.";
+      this.help.textContent = "Use the Myliner view menu for controls.";
       return;
     }
 
@@ -484,18 +484,18 @@ export class PylinerOverlay extends HTMLElement {
         inset: 0;
         z-index: 2147483647;
         pointer-events: none;
-        --pyliner-overlay-width: 50vw;
-        --pyliner-overlay-height: 50vh;
-        --pyliner-overlay-left: 50vw;
-        --pyliner-overlay-top: 50vh;
+        --myliner-overlay-width: 50vw;
+        --myliner-overlay-height: 50vh;
+        --myliner-overlay-left: 50vw;
+        --myliner-overlay-top: 50vh;
       }
 
       canvas {
         position: fixed;
-        left: var(--pyliner-overlay-left);
-        top: var(--pyliner-overlay-top);
-        width: var(--pyliner-overlay-width);
-        height: var(--pyliner-overlay-height);
+        left: var(--myliner-overlay-left);
+        top: var(--myliner-overlay-top);
+        width: var(--myliner-overlay-width);
+        height: var(--myliner-overlay-height);
         transform: translate(-50%, -50%);
         display: block;
         box-sizing: border-box;
@@ -527,10 +527,10 @@ export class PylinerOverlay extends HTMLElement {
 
       div {
         position: fixed;
-        left: var(--pyliner-overlay-left);
-        top: var(--pyliner-overlay-top);
-        width: var(--pyliner-overlay-width);
-        height: var(--pyliner-overlay-height);
+        left: var(--myliner-overlay-left);
+        top: var(--myliner-overlay-top);
+        width: var(--myliner-overlay-width);
+        height: var(--myliner-overlay-height);
         box-sizing: border-box;
         padding: 16px;
         transform: translate(-50%, -50%);
@@ -556,19 +556,19 @@ export class PylinerOverlay extends HTMLElement {
    */
   applyLayoutAttributes() {
     this.style.setProperty(
-      "--pyliner-overlay-width",
+      "--myliner-overlay-width",
       this.getAttribute("overlay-width") || "50vw",
     );
     this.style.setProperty(
-      "--pyliner-overlay-height",
+      "--myliner-overlay-height",
       this.getAttribute("overlay-height") || "50vh",
     );
     this.style.setProperty(
-      "--pyliner-overlay-left",
+      "--myliner-overlay-left",
       this.getAttribute("overlay-left") || "50vw",
     );
     this.style.setProperty(
-      "--pyliner-overlay-top",
+      "--myliner-overlay-top",
       this.getAttribute("overlay-top") || "50vh",
     );
   }
@@ -830,4 +830,4 @@ export class PylinerOverlay extends HTMLElement {
   }
 }
 
-customElements.define("pyliner-overlay", PylinerOverlay);
+customElements.define("myliner-overlay", MylinerOverlay);

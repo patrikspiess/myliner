@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from pyliner import demo_server
+from myliner import demo_server
 
 
 def test_find_project_root_finds_demo_directory(tmp_path: Path) -> None:
@@ -15,7 +15,7 @@ def test_find_project_root_finds_demo_directory(tmp_path: Path) -> None:
     """
 
     project_root = tmp_path / "project"
-    nested_path = project_root / "src" / "pyliner"
+    nested_path = project_root / "src" / "myliner"
     demo_path = project_root / "demo"
     nested_path.mkdir(parents=True)
     demo_path.mkdir()

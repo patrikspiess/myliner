@@ -2,16 +2,16 @@
 
 const vscode = require("vscode");
 
-const VIEW_TYPE = "pyliner.sidebar";
+const VIEW_TYPE = "myliner.sidebar";
 const VIEW_COMMANDS = {
-  "pyliner.addLine": "addLine",
-  "pyliner.removeLine": "removeLine",
-  "pyliner.speedUp": "speedUp",
-  "pyliner.speedDown": "speedDown",
+  "myliner.addLine": "addLine",
+  "myliner.removeLine": "removeLine",
+  "myliner.speedUp": "speedUp",
+  "myliner.speedDown": "speedDown",
 };
 
-/** Provide the Pyliner Webview inside the Explorer view. */
-class PylinerViewProvider {
+/** Provide the Myliner Webview inside the Explorer view. */
+class MylinerViewProvider {
   /** Store extension state until VS Code resolves the Webview. */
   constructor(extensionUri) {
     this.extensionUri = extensionUri;
@@ -20,7 +20,7 @@ class PylinerViewProvider {
     this.pendingCommands = [];
   }
 
-  /** Initialize a newly resolved Pyliner Webview. */
+  /** Initialize a newly resolved Myliner Webview. */
   resolveWebviewView(webviewView) {
     this.view = webviewView;
     this.ready = false;
@@ -48,7 +48,7 @@ class PylinerViewProvider {
     });
   }
 
-  /** Reveal the Pyliner view in the Explorer. */
+  /** Reveal the Myliner view in the Explorer. */
   async showView() {
     await vscode.commands.executeCommand(`${VIEW_TYPE}.focus`);
   }
@@ -57,7 +57,7 @@ class PylinerViewProvider {
   async runViewCommand(command) {
     await this.showView();
     if (!this.view) {
-      vscode.window.showWarningMessage("The Pyliner view could not be opened.");
+      vscode.window.showWarningMessage("The Myliner view could not be opened.");
       return;
     }
 
@@ -73,7 +73,7 @@ class PylinerViewProvider {
   getHtml(webview) {
     const nonce = getNonce();
     const componentScriptUri = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.extensionUri, "media", "pyliner-web.js"),
+      vscode.Uri.joinPath(this.extensionUri, "media", "myliner-web.js"),
     );
 
     return `<!doctype html>
@@ -97,7 +97,7 @@ class PylinerViewProvider {
         background: var(--vscode-sideBar-background, transparent);
       }
 
-      pyliner-overlay {
+      myliner-overlay {
         display: block;
         width: 100vw;
         height: 100vh;
@@ -106,7 +106,7 @@ class PylinerViewProvider {
     <script type="module" nonce="${nonce}" src="${componentScriptUri}"></script>
   </head>
   <body>
-    <pyliner-overlay
+    <myliner-overlay
       active
       keyboard-controls="false"
       click-to-stop="false"
@@ -122,12 +122,12 @@ class PylinerViewProvider {
       overlay-height="100vh"
       overlay-left="50vw"
       overlay-top="50vh"
-    ></pyliner-overlay>
+    ></myliner-overlay>
     <script nonce="${nonce}">
-      const overlay = document.querySelector("pyliner-overlay");
+      const overlay = document.querySelector("myliner-overlay");
       const vscodeApi = acquireVsCodeApi();
 
-      customElements.whenDefined("pyliner-overlay").then(() => {
+      customElements.whenDefined("myliner-overlay").then(() => {
         vscodeApi.postMessage({ type: "ready" });
       });
 
@@ -157,7 +157,7 @@ class PylinerViewProvider {
 
 /** Register the Explorer view and its menu commands. */
 function activate(context) {
-  const provider = new PylinerViewProvider(context.extensionUri);
+  const provider = new MylinerViewProvider(context.extensionUri);
   const viewCommands = Object.entries(VIEW_COMMANDS).map(([commandId, message]) =>
     vscode.commands.registerCommand(commandId, () => provider.runViewCommand(message)),
   );
@@ -166,7 +166,7 @@ function activate(context) {
     vscode.window.registerWebviewViewProvider(VIEW_TYPE, provider, {
       webviewOptions: { retainContextWhenHidden: true },
     }),
-    vscode.commands.registerCommand("pyliner.showPanel", () => provider.showView()),
+    vscode.commands.registerCommand("myliner.showPanel", () => provider.showView()),
     ...viewCommands,
   );
 }

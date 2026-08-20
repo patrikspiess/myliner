@@ -1,9 +1,9 @@
 {
-  "name": "pyliner-vscode",
-  "displayName": "Pyliner",
-  "description": "Animated Pyliner lines in a dedicated VS Code Explorer view.",
+  "name": "myliner-vscode",
+  "displayName": "Myliner",
+  "description": "Animated Myliner lines in a dedicated VS Code Explorer view.",
   "version": "0.1.5",
-  "publisher": "pyliner",
+  "publisher": "myliner",
   "license": "MIT",
   "engines": {
     "vscode": "^1.90.0"
@@ -12,12 +12,12 @@
     "Other"
   ],
   "activationEvents": [
-    "onView:pyliner.sidebar",
-    "onCommand:pyliner.showPanel",
-    "onCommand:pyliner.addLine",
-    "onCommand:pyliner.removeLine",
-    "onCommand:pyliner.speedUp",
-    "onCommand:pyliner.speedDown"
+    "onView:myliner.sidebar",
+    "onCommand:myliner.showPanel",
+    "onCommand:myliner.addLine",
+    "onCommand:myliner.removeLine",
+    "onCommand:myliner.speedUp",
+    "onCommand:myliner.speedDown"
   ],
   "main": "./extension.js",
   "contributes": {
@@ -25,75 +25,75 @@
       "explorer": [
         {
           "type": "webview",
-          "id": "pyliner.sidebar",
-          "name": "Pyliner",
-          "icon": "media/pyliner.svg"
+          "id": "myliner.sidebar",
+          "name": "Myliner",
+          "icon": "media/myliner.svg"
         }
       ]
     },
     "commands": [
       {
-        "command": "pyliner.showPanel",
-        "title": "Pyliner: Show Panel"
+        "command": "myliner.showPanel",
+        "title": "Myliner: Show Panel"
       },
       {
-        "command": "pyliner.addLine",
-        "title": "Pyliner: Add Line",
+        "command": "myliner.addLine",
+        "title": "Myliner: Add Line",
         "icon": "$(add)"
       },
       {
-        "command": "pyliner.removeLine",
-        "title": "Pyliner: Remove Line",
+        "command": "myliner.removeLine",
+        "title": "Myliner: Remove Line",
         "icon": "$(remove)"
       },
       {
-        "command": "pyliner.speedUp",
-        "title": "Pyliner: Speed Up",
+        "command": "myliner.speedUp",
+        "title": "Myliner: Speed Up",
         "icon": "$(chevron-up)"
       },
       {
-        "command": "pyliner.speedDown",
-        "title": "Pyliner: Speed Down",
+        "command": "myliner.speedDown",
+        "title": "Myliner: Speed Down",
         "icon": "$(chevron-down)"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "pyliner.showPanel"
+          "command": "myliner.showPanel"
         },
         {
-          "command": "pyliner.addLine"
+          "command": "myliner.addLine"
         },
         {
-          "command": "pyliner.removeLine"
+          "command": "myliner.removeLine"
         },
         {
-          "command": "pyliner.speedUp"
+          "command": "myliner.speedUp"
         },
         {
-          "command": "pyliner.speedDown"
+          "command": "myliner.speedDown"
         }
       ],
       "view/title": [
         {
-          "command": "pyliner.removeLine",
-          "when": "view == pyliner.sidebar",
+          "command": "myliner.removeLine",
+          "when": "view == myliner.sidebar",
           "group": "navigation@1"
         },
         {
-          "command": "pyliner.addLine",
-          "when": "view == pyliner.sidebar",
+          "command": "myliner.addLine",
+          "when": "view == myliner.sidebar",
           "group": "navigation@2"
         },
         {
-          "command": "pyliner.speedDown",
-          "when": "view == pyliner.sidebar",
+          "command": "myliner.speedDown",
+          "when": "view == myliner.sidebar",
           "group": "navigation@3"
         },
         {
-          "command": "pyliner.speedUp",
-          "when": "view == pyliner.sidebar",
+          "command": "myliner.speedUp",
+          "when": "view == myliner.sidebar",
           "group": "navigation@4"
         }
       ]

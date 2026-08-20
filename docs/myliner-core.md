@@ -1,16 +1,16 @@
-# Pyliner-Kernmodul
+# Myliner-Kernmodul
 
 Der Python-Kern trennt Geometrie, Animationszustand und Darstellung. Dadurch kann der Engine ohne
 Pygame importiert und getestet werden.
 
-![Pyliner Core Workflow](./pyliner-core.drawio.svg)
+![Myliner Core Workflow](./myliner-core.drawio.svg)
 
 ## Zustandsmodell
 
-`PylinerSettings` enthält und validiert Auflösung, Linienanzahl, History, Farbe, Helligkeitsschritt,
+`MylinerSettings` enthält und validiert Auflösung, Linienanzahl, History, Farbe, Helligkeitsschritt,
 Speed und Linienstärke.
 
-`PylinerEngine` verwaltet drei NumPy-Arrays:
+`MylinerEngine` verwaltet drei NumPy-Arrays:
 
 - `brightness`: zusätzlicher Helligkeitswert pro Pixel;
 - `coverage`: Anzahl aktiver History-Frames pro Pixel;
@@ -24,7 +24,7 @@ erreicht, erhält er eine neue Richtung und einen neuen Versatz nach innen.
 
 ## Render-Schritt
 
-`PylinerEngine.step()` führt diese Schritte aus:
+`MylinerEngine.step()` führt diese Schritte aus:
 
 1. Bestehende RGB-Pixel werden abgedunkelt.
 2. Die aktuelle Verbindung jedes Endpunktpaars wird rasterisiert.
@@ -54,7 +54,7 @@ mit der neuen Auflösung neu.
 
 ## Web-Ausgaben
 
-`demo/pyliner-web.js` implementiert dieselben sichtbaren Regeln mit Browser-Canvas. Die Demo zeigt
+`demo/myliner-web.js` implementiert dieselben sichtbaren Regeln mit Browser-Canvas. Die Demo zeigt
 die Komponente als schwarzes Overlay; die VS-Code-Extension verwendet dieselbe Datei rahmenlos und
 transparent in einer Explorer-View. Die jeweiligen Start- und Bedienmöglichkeiten sind im
 `README.md` beschrieben.

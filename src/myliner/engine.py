@@ -1,5 +1,5 @@
 """
-Animation engine for Pyliner.
+Animation engine for Myliner.
 """
 
 from __future__ import annotations
@@ -68,9 +68,9 @@ class LineState:
 
 
 @dataclass(frozen=True, slots=True)
-class PylinerSettings:  # pylint: disable=too-many-instance-attributes
+class MylinerSettings:  # pylint: disable=too-many-instance-attributes
     """
-    Configure the Pyliner animation engine.
+    Configure the Myliner animation engine.
     """
 
     width: int
@@ -106,14 +106,14 @@ class PylinerSettings:  # pylint: disable=too-many-instance-attributes
             raise ValueError("thickness must be at least 1")
 
 
-class PylinerEngine:  # pylint: disable=too-many-instance-attributes
+class MylinerEngine:  # pylint: disable=too-many-instance-attributes
     """
     Run the line animation state and brightness accumulation.
     """
 
     def __init__(
         self,
-        settings: PylinerSettings,
+        settings: MylinerSettings,
         *,
         seed: int | None = None,
     ) -> None:

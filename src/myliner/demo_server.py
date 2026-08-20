@@ -1,5 +1,5 @@
 """
-Local static web server for the Pyliner browser demo.
+Local static web server for the Myliner browser demo.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
     Build the demo server command line argument parser.
     """
 
-    parser = argparse.ArgumentParser(description="Serve the Pyliner browser demo locally.")
+    parser = argparse.ArgumentParser(description="Serve the Myliner browser demo locally.")
     parser.add_argument(
         "--host",
         default="127.0.0.1",
@@ -73,7 +73,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     server = create_server(arguments.host, arguments.port, project_root)
     demo_url = f"http://{arguments.host}:{arguments.port}/demo/index.html"
 
-    print(f"Serving Pyliner demo at {demo_url}")
+    print(f"Serving Myliner demo at {demo_url}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

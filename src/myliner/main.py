@@ -1,5 +1,5 @@
 """
-Pygame entry point for running Pyliner in graphics mode.
+Pygame entry point for running Myliner in graphics mode.
 """
 
 from __future__ import annotations
@@ -13,8 +13,8 @@ from .engine import (
     DEFAULT_HISTORY,
     DEFAULT_SPEED,
     DEFAULT_THICKNESS,
-    PylinerEngine,
-    PylinerSettings,
+    MylinerEngine,
+    MylinerSettings,
     next_fibonacci_speed,
     previous_fibonacci_speed,
 )
@@ -49,7 +49,7 @@ def build_argument_parser() -> argparse.ArgumentParser:
         A configured argument parser.
     """
 
-    parser = argparse.ArgumentParser(description="Run the Pyliner line animation.")
+    parser = argparse.ArgumentParser(description="Run the Myliner line animation.")
     parser.add_argument("--lines", type=int, default=1, help="Number of animated lines.")
     parser.add_argument("--history", type=int, default=DEFAULT_HISTORY, help="Line history length.")
     parser.add_argument(
@@ -106,12 +106,12 @@ def build_settings(
     width: int,
     height: int,
     runtime_settings: RuntimeSettings,
-) -> PylinerSettings:
+) -> MylinerSettings:
     """
     Build engine settings for the current runtime mode.
     """
 
-    return PylinerSettings(
+    return MylinerSettings(
         width=width,
         height=height,
         line_count=runtime_settings.line_count,
@@ -123,13 +123,13 @@ def build_settings(
 
 def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-many-statements
     """
-    Run the Pyliner Pygame animation.
+    Run the Myliner Pygame animation.
     """
 
     arguments = build_argument_parser().parse_args()
     pygame = load_pygame()
     pygame.init()
-    pygame.display.set_caption("Pyliner")
+    pygame.display.set_caption("Myliner")
 
     display_info = pygame.display.Info()
     fullscreen = arguments.fullscreen
@@ -145,7 +145,7 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
         arguments.max_long_side,
         fullscreen,
     )
-    engine = PylinerEngine(
+    engine = MylinerEngine(
         build_settings(arguments, width, height, runtime_settings),
         seed=arguments.seed,
     )
@@ -171,7 +171,7 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
             arguments.max_long_side,
             fullscreen,
         )
-        engine = PylinerEngine(
+        engine = MylinerEngine(
             build_settings(arguments, width, height, runtime_settings),
             seed=arguments.seed,
         )

@@ -1,5 +1,5 @@
 
-# Pyliner Grundlagen
+# Myliner Grundlagen
 
 Das Projekt wird als open source mit einer MIT Lizez auf Github.com veröffentlicht.
 

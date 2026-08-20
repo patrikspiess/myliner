@@ -10,7 +10,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from pyliner import main
+from myliner import main
 
 
 def test_calculate_window_size_caps_windowed_mode() -> None:
@@ -281,7 +281,7 @@ class FakeEngine:
     Minimal engine replacement recording runtime changes.
     """
 
-    settings: main.PylinerSettings
+    settings: main.MylinerSettings
     seed: int | None = None
     add_line_count: int = 0
     remove_line_count: int = 0
@@ -362,19 +362,19 @@ def test_main_uses_pygame_framebuffer_and_runtime_controls(
     )
     created_engines: list[FakeEngine] = []
 
-    def create_engine(settings: main.PylinerSettings, *, seed: int | None = None) -> FakeEngine:
+    def create_engine(settings: main.MylinerSettings, *, seed: int | None = None) -> FakeEngine:
         engine = FakeEngine(settings=settings, seed=seed)
         created_engines.append(engine)
         return engine
 
     monkeypatch.setattr(main, "load_pygame", lambda: fake_pygame)
-    monkeypatch.setattr(main, "PylinerEngine", create_engine)
-    monkeypatch.setattr("sys.argv", ["pyliner", "--speed", "20", "--seed", "7"])
+    monkeypatch.setattr(main, "MylinerEngine", create_engine)
+    monkeypatch.setattr("sys.argv", ["myliner", "--speed", "20", "--seed", "7"])
 
     main.main()
 
     assert fake_pygame.init_count == 1
-    assert fake_pygame.display.caption == "Pyliner"
+    assert fake_pygame.display.caption == "Myliner"
     assert fake_pygame.image.frombuffer_calls[0][1] == (800, 450)
     assert fake_pygame.display.set_mode_calls == [((800, 450), 0), ((1600, 900), 1)]
     assert created_engines[0].add_line_count == 1
@@ -397,8 +397,8 @@ def test_main_quits_on_mouse_click(monkeypatch: pytest.MonkeyPatch) -> None:
     fake_pygame = FakePygame([[FakeEvent(FakePygame.MOUSEBUTTONDOWN)]])
 
     monkeypatch.setattr(main, "load_pygame", lambda: fake_pygame)
-    monkeypatch.setattr(main, "PylinerEngine", FakeEngine)
-    monkeypatch.setattr("sys.argv", ["pyliner"])
+    monkeypatch.setattr(main, "MylinerEngine", FakeEngine)
+    monkeypatch.setattr("sys.argv", ["myliner"])
 
     main.main()
 

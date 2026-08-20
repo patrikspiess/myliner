@@ -13,7 +13,7 @@ def test_core_diagram_contains_editable_drawio_model() -> None:
     The rendered SVG embeds a complete diagrams.net model for editing.
     """
 
-    svg_root = ElementTree.parse(PROJECT_ROOT / "docs" / "pyliner-core.drawio.svg").getroot()
+    svg_root = ElementTree.parse(PROJECT_ROOT / "docs" / "myliner-core.drawio.svg").getroot()
     drawio_content = svg_root.attrib["content"]
     mxfile = ElementTree.fromstring(drawio_content)
     graph_model = mxfile.find("./diagram/mxGraphModel")

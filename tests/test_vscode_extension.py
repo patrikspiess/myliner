@@ -32,13 +32,13 @@ def test_vscode_extension_contributes_explorer_webview() -> None:
         "explorer": [
             {
                 "type": "webview",
-                "id": "pyliner.sidebar",
-                "name": "Pyliner",
-                "icon": "media/pyliner.svg",
+                "id": "myliner.sidebar",
+                "name": "Myliner",
+                "icon": "media/myliner.svg",
             }
         ]
     }
-    assert "onView:pyliner.sidebar" in package["activationEvents"]
+    assert "onView:myliner.sidebar" in package["activationEvents"]
 
 
 def test_vscode_extension_exposes_menu_commands() -> None:
@@ -50,27 +50,27 @@ def test_vscode_extension_exposes_menu_commands() -> None:
     command_ids = {command["command"] for command in package["contributes"]["commands"]}
 
     assert command_ids == {
-        "pyliner.showPanel",
-        "pyliner.addLine",
-        "pyliner.removeLine",
-        "pyliner.speedUp",
-        "pyliner.speedDown",
+        "myliner.showPanel",
+        "myliner.addLine",
+        "myliner.removeLine",
+        "myliner.speedUp",
+        "myliner.speedDown",
     }
     assert all(
         "icon" in command
         for command in package["contributes"]["commands"]
-        if command["command"] != "pyliner.showPanel"
+        if command["command"] != "myliner.showPanel"
     )
     title_menu = package["contributes"]["menus"]["view/title"]
 
     assert [item["command"] for item in title_menu] == [
-        "pyliner.removeLine",
-        "pyliner.addLine",
-        "pyliner.speedDown",
-        "pyliner.speedUp",
+        "myliner.removeLine",
+        "myliner.addLine",
+        "myliner.speedDown",
+        "myliner.speedUp",
     ]
     assert all(menu_item["command"] in command_ids for menu_item in title_menu)
-    assert all(menu_item["when"] == "view == pyliner.sidebar" for menu_item in title_menu)
+    assert all(menu_item["when"] == "view == myliner.sidebar" for menu_item in title_menu)
     assert [item["group"] for item in title_menu] == [
         "navigation@1",
         "navigation@2",
@@ -88,9 +88,9 @@ def test_vscode_extension_uses_web_component_without_keyboard_controls() -> None
 
     assert "vscode.window.registerWebviewViewProvider" in source
     assert "vscode.window.createWebviewPanel" not in source
-    assert "pyliner.sidebar.focus" not in source
+    assert "myliner.sidebar.focus" not in source
     assert "`${VIEW_TYPE}.focus`" in source
-    assert 'media", "pyliner-web.js"' in source
+    assert 'media", "myliner-web.js"' in source
     assert 'keyboard-controls="false"' in source
     assert 'click-to-stop="false"' in source
     assert "background: var(--vscode-sideBar-background, transparent);" in source
@@ -114,18 +114,18 @@ def test_vscode_extension_web_component_matches_browser_demo() -> None:
     It keeps the VS Code view animation code in sync with the browser demo.
     """
 
-    demo_source = (PROJECT_ROOT / "demo" / "pyliner-web.js").read_text(encoding="utf-8")
-    extension_source = read_extension_asset("media/pyliner-web.js")
+    demo_source = (PROJECT_ROOT / "demo" / "myliner-web.js").read_text(encoding="utf-8")
+    extension_source = read_extension_asset("media/myliner-web.js")
 
     assert extension_source == demo_source
 
 
 def test_vscode_extension_icon_uses_straight_lines() -> None:
     """
-    It renders the Pyliner icon without curved path segments.
+    It renders the Myliner icon without curved path segments.
     """
 
-    icon = ElementTree.parse(EXTENSION_ROOT / "media" / "pyliner.svg").getroot()
+    icon = ElementTree.parse(EXTENSION_ROOT / "media" / "myliner.svg").getroot()
     namespace = {"svg": "http://www.w3.org/2000/svg"}
 
     assert len(icon.findall("svg:polyline", namespace)) == 2

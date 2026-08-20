@@ -6,7 +6,7 @@ from random import Random
 
 import pytest
 
-from pyliner.geometry import (
+from myliner.geometry import (
     DEFAULT_OFFSET,
     MAX_ANGLE,
     MAX_OFFSET,

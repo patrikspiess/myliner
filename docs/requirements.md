@@ -1,12 +1,12 @@
 # Grundsatz
 
-Pyliner erzeugt eine oder mehrere animierte Linien. Die Linien bewegen sich über die
+Myliner erzeugt eine oder mehrere animierte Linien. Die Linien bewegen sich über die
 Zeichenfläche und hinterlassen Spuren. Überschneidungen werden heller; auslaufende Spuren werden
 wieder dunkler.
 
 # Ausführungsformen
 
-- Die Desktop-Anwendung lässt sich mit `poetry run pyliner [options]` starten.
+- Die Desktop-Anwendung lässt sich mit `poetry run myliner [options]` starten.
 - Der Engine lässt sich als Klasse in andere Python-Projekte importieren.
 - Die Animation steht als Web-Komponente für Webseiten zur Verfügung.
 - Eine VS-Code-Extension zeigt die Animation in einer eigenen Explorer-View an.
@@ -68,12 +68,12 @@ die einzige praktische Begrenzung. Das Hilfe-Overlay zeigt Paare als
 
 # Browser-Demo
 
-Die React-Demo bindet `<pyliner-overlay>` als Overlay ein. Sie lässt sich per Link, Button oder
+Die React-Demo bindet `<myliner-overlay>` als Overlay ein. Sie lässt sich per Link, Button oder
 `Ctrl+Alt+P` starten. Das schwarze, gerahmte Overlay ist standardmäßig 50% des Viewports groß und
 zentriert; Größe und Position sind konfigurierbar.
 
 Die Taste `f` schaltet Browser und Komponente gemeinsam in den Fullscreen-Modus und wieder zurück.
-Ein kleiner lokaler Webserver wird nur bei Bedarf mit `poetry run pyliner-web` gestartet. Start,
+Ein kleiner lokaler Webserver wird nur bei Bedarf mit `poetry run myliner-web` gestartet. Start,
 Bedienung und Beenden sind im `README.md` dokumentiert.
 
 # VS-Code-Extension
@@ -93,7 +93,7 @@ Animation nicht. Die Animation startet automatisch mit folgenden kompakten Einst
 
 Die Extension registriert keine Tastenkürzel. Im Titelmenü stehen genau vier Buttons bereit: Linie
 entfernen, Linie hinzufügen, Speed reduzieren und Speed erhöhen. Diese Aktionen sowie
-`Pyliner: Show Panel` sind auch in der Command Palette verfügbar.
+`Myliner: Show Panel` sind auch in der Command Palette verfügbar.
 
 Es gibt keine Befehle für Start, Stop, Dicke, Hilfe oder Fullscreen. Die View zeigt kein
 Hilfe-Overlay.

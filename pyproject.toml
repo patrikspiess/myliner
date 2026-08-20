@@ -1,5 +1,5 @@
 [project]
-name = "pyliner"
+name = "myliner"
 version = "0.1.0"
 description = "Animated moving-line graphics module."
 authors = [
@@ -13,8 +13,8 @@ dependencies = [
 ]
 
 [project.scripts]
-pyliner = "pyliner.main:main"
-pyliner-web = "pyliner.demo_server:main"
+myliner = "myliner.main:main"
+myliner-web = "myliner.demo_server:main"
 
 [project.optional-dependencies]
 dev = [
@@ -27,7 +27,7 @@ dev = [
 ]
 
 [tool.poetry]
-packages = [{include = "pyliner", from = "src"}]
+packages = [{include = "myliner", from = "src"}]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
