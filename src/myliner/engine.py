@@ -583,11 +583,13 @@ class MylinerEngine:  # pylint: disable=too-many-instance-attributes
         Darken already drawn pixels before drawing the next line frame.
         """
 
-        dark_pixels = self._rgb_buffer <= self._fade_step
+        np.maximum(
+            self._rgb_buffer,
+            self._fade_step,
+            out=self._rgb_buffer,
+        )
         np.subtract(
             self._rgb_buffer,
             self._fade_step,
             out=self._rgb_buffer,
-            where=~dark_pixels,
         )
-        self._rgb_buffer[dark_pixels] = 0

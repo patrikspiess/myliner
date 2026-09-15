@@ -15,6 +15,7 @@ MAX_OFFSET = 20
 MAX_LONG_SIDE = 800
 MIN_ANGLE = 15
 MAX_ANGLE = 165
+MAX_MOVEMENT_CHANGE_RATIO = 0.2
 
 
 class Side(StrEnum):
@@ -112,8 +113,18 @@ class EdgePoint:
             side=hit_side,
             x_position=_clamp(next_x, 0, width - 1),
             y_position=_clamp(next_y, 0, height - 1),
-            angle_degrees=random_generator.randint(MIN_ANGLE, MAX_ANGLE),
-            offset=random_generator.randint(MIN_OFFSET, MAX_OFFSET),
+            angle_degrees=_random_nearby_value(
+                self.angle_degrees,
+                MIN_ANGLE,
+                MAX_ANGLE,
+                random_generator,
+            ),
+            offset=_random_nearby_value(
+                self.offset,
+                MIN_OFFSET,
+                MAX_OFFSET,
+                random_generator,
+            ),
         )
 
 
@@ -286,6 +297,23 @@ def _movement_delta(side: Side, angle_degrees: int, offset: int) -> tuple[float,
     if side is Side.BOTTOM:
         return edge_delta, -inward_delta
     return inward_delta, edge_delta
+
+
+def _random_nearby_value(
+    current_value: int,
+    minimum: int,
+    maximum: int,
+    random_generator: Random,
+) -> int:
+    """
+    Return a random value within 20 percent of the complete allowed range.
+    """
+
+    maximum_change = int((maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO)
+    return random_generator.randint(
+        max(minimum, current_value - maximum_change),
+        min(maximum, current_value + maximum_change),
+    )
 
 
 def _hit_side(x_position: float, y_position: float, width: int, height: int) -> Side | None:

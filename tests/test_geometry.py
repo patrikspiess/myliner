@@ -20,6 +20,28 @@ from myliner.geometry import (
 )
 
 
+class RecordingRandom(Random):
+    """
+    Record requested integer ranges and return their upper bounds.
+    """
+
+    def __init__(self) -> None:
+        """
+        Initialize the recorded ranges.
+        """
+
+        super().__init__()
+        self.randint_calls: list[tuple[int, int]] = []
+
+    def randint(self, a: int, b: int) -> int:
+        """
+        Record one inclusive integer range.
+        """
+
+        self.randint_calls.append((a, b))
+        return b
+
+
 def test_calculate_graphics_size_caps_landscape_long_side() -> None:
     """
     It preserves the aspect ratio for a landscape screen.
@@ -71,6 +93,39 @@ def test_edge_point_randomizes_angle_and_offset_when_hitting_border() -> None:
     assert moved_point.to_xy(10, 10) == (0, 5)
     assert MIN_ANGLE <= moved_point.angle_degrees <= MAX_ANGLE
     assert MIN_OFFSET <= moved_point.offset <= MAX_OFFSET
+
+
+@pytest.mark.parametrize(
+    ("angle_degrees", "offset", "expected_ranges"),
+    [
+        (MIN_ANGLE, MIN_OFFSET, [(15, 45), (5, 8)]),
+        (90, 10, [(60, 120), (7, 13)]),
+        (MAX_ANGLE, MAX_OFFSET, [(135, 165), (17, 20)]),
+    ],
+)
+def test_edge_point_limits_randomized_movement_changes(
+    angle_degrees: int,
+    offset: int,
+    expected_ranges: list[tuple[int, int]],
+) -> None:
+    """
+    It limits bounce changes to 20 percent of each complete allowed range.
+    """
+
+    random_generator = RecordingRandom()
+    point = EdgePoint(
+        side=Side.RIGHT,
+        x_position=0,
+        y_position=50,
+        angle_degrees=angle_degrees,
+        offset=offset,
+    )
+
+    moved_point = point.moved(width=100, height=100, random_generator=random_generator)
+
+    assert random_generator.randint_calls == expected_ranges
+    assert moved_point.angle_degrees == expected_ranges[0][1]
+    assert moved_point.offset == expected_ranges[1][1]
 
 
 def test_edge_point_uses_required_default_offset_range() -> None:

@@ -16,7 +16,7 @@ wieder dunkler.
 
 ## Auflösung
 
-Im Fenstermodus ist die längere Seite höchstens 800 Pixel groß. Die kürzere Seite ergibt sich aus
+Im Fenstermodus ist die längere Seite höchstens 800 Pixel gross. Die kürzere Seite ergibt sich aus
 dem Seitenverhältnis des Monitors. Optional steht ein Fullscreen-Modus in nativer Auflösung zur
 Verfügung.
 
@@ -26,8 +26,8 @@ Jede Linie startet mit zwei zufälligen Punkten auf gegenüberliegenden Seiten d
 Die Standardwerte sind:
 
 - Farbe: `#FF6600` beziehungsweise RGB `255, 102, 0`.
-- Helligkeit: `0`. Dieser Wert entspricht der normalen Linienfarbe. Größere Werte hellen sie in
-  Richtung Weiß auf. Beim Entfernen alter Frames darf der Wert nie unter `0` fallen.
+- Helligkeit: `0`. Dieser Wert entspricht der normalen Linienfarbe. Grössere Werte hellen sie in
+  Richtung Weiss auf. Beim Entfernen alter Frames darf der Wert nie unter `0` fallen.
 - Dicke: `3` Pixel.
 - History: `150` Frames pro Linie.
 - Speed: `10` neue Frames pro Sekunde.
@@ -38,13 +38,13 @@ Die Standardwerte sind:
 
 Ein Frame verbindet die beiden aktuellen Endpunkte. Bereits belegte Pixel werden heller. Danach
 bewegen sich beide Endpunkte um ihren Versatz weiter. Erreicht ein Punkt den Rand, werden Richtung
-und Versatz neu gewählt, sodass er sich wieder in die Zeichenfläche bewegt.
+und Versatz neu gewählt, sodass er sich wieder in die Zeichenfläche bewegt. Die Änderung des Winkels und des Versatzes darf nicht mehr als 20% vom gesamtmöglichen Wert vom vorherigen Wert entfernt liegen.
 
-Jede Linie verwaltet ihre eigene History. Frames außerhalb dieser History werden entfernt und
+Jede Linie verwaltet ihre eigene History. Frames ausserhalb dieser History werden entfernt und
 verringern Helligkeit und Abdeckung der betroffenen Pixel. Visuell dunkeln alte Spuren schrittweise
 bis Schwarz ab.
 
-Wird die Linienanzahl reduziert, wird jeweils die älteste Linie einschließlich ihrer vollständigen
+Wird die Linienanzahl reduziert, wird jeweils die älteste Linie einschliesslich ihrer vollständigen
 History sofort entfernt. Es dürfen keine Restspuren dieser Linie sichtbar bleiben.
 
 ## Performance
@@ -65,12 +65,16 @@ Framebuffer-Verarbeitung sollen deshalb möglichst vektorisiert mit NumPy-Arrays
 Die Speed-Einstellung hat keine feste technische Obergrenze. Die verfügbare Rendering-Leistung ist
 die einzige praktische Begrenzung. Das Hilfe-Overlay zeigt Paare als
 `[Taste]/[Taste]: [Beschreibung]` und Umschalter als `[Taste]: [Beschreibung]` an.
+Hinter den Beschreibungen für Linienanzahl, Speed und Liniendicke zeigt es den jeweiligen aktuellen
+Wert in eckigen Klammern an.
+
+Der Fullscreen Mode soll den Monitor verwenden auf dem das Fenster aktuell platziert ist.
 
 # Browser-Demo
 
 Die React-Demo bindet `<myliner-overlay>` als Overlay ein. Sie lässt sich per Link, Button oder
-`Ctrl+Alt+P` starten. Das schwarze, gerahmte Overlay ist standardmäßig 50% des Viewports groß und
-zentriert; Größe und Position sind konfigurierbar.
+`Ctrl+Alt+P` starten. Das schwarze, gerahmte Overlay ist standardmässig 50% des Viewports gross und
+zentriert; Grösse und Position sind konfigurierbar.
 
 Die Taste `f` schaltet Browser und Komponente gemeinsam in den Fullscreen-Modus und wieder zurück.
 Ein kleiner lokaler Webserver wird nur bei Bedarf mit `poetry run myliner-web` gestartet. Start,

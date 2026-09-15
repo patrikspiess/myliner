@@ -51,6 +51,19 @@ def test_web_component_help_uses_real_newline_characters() -> None:
     assert '].join("\\\\n");' not in source
 
 
+def test_web_component_help_shows_current_runtime_settings() -> None:
+    """
+    It displays and refreshes current line count, speed, and thickness values.
+    """
+
+    source = read_demo_asset("myliner-web.js")
+
+    assert "`q/a: line count [${this.lines.length}]`" in source
+    assert "`w/s: speed [${this.speed}]`" in source
+    assert "`e/d: thickness [${this.thickness}]`" in source
+    assert source.count("this.updateHelp();") == 7
+
+
 def test_web_component_can_disable_click_to_stop() -> None:
     """
     It keeps click-to-stop enabled by default but allows embedded views to disable it.
@@ -78,6 +91,19 @@ def test_web_component_supports_compact_transparent_embedding() -> None:
     assert "this.pixelBuffer[index + 3] - fadeStep" in source
 
 
+def test_web_component_limits_randomized_movement_changes() -> None:
+    """
+    It limits bounce changes to 20 percent of each complete allowed range.
+    """
+
+    source = read_demo_asset("myliner-web.js")
+
+    assert "const MAX_MOVEMENT_CHANGE_RATIO = 0.2;" in source
+    assert "randomNearbyInt(this.angleDegrees, 15, 165)" in source
+    assert "randomNearbyInt(this.offset, offsetMinimum, offsetMaximum)" in source
+    assert "(maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO" in source
+
+
 def test_web_component_uses_fibonacci_speed_controls_without_fixed_cap() -> None:
     """
     It changes speed on the Fibonacci sequence and does not cap it at 1000.
@@ -91,7 +117,7 @@ def test_web_component_uses_fibonacci_speed_controls_without_fixed_cap() -> None
     assert "this.speed = previousFibonacciSpeed(this.speed);" in source
     assert "MAX_SPEED" not in source
     assert "SPEED_STEP" not in source
-    assert '"q/a: line count"' in source
+    assert "`q/a: line count [${this.lines.length}]`" in source
 
 
 def test_web_component_toggles_browser_and_component_fullscreen() -> None:

@@ -20,7 +20,8 @@ Jede Linie besitzt eine stabile `line_id`, zwei `EdgePoint`-Objekte und eine eig
 Pixelindizes. So kann der Engine die älteste Linie samt ihrer Spuren gezielt entfernen.
 
 Ein `EdgePoint` bewegt sich von einem Rand in die Zeichenfläche. Sobald er erneut einen Rand
-erreicht, erhält er eine neue Richtung und einen neuen Versatz nach innen.
+erreicht, erhält er eine neue Richtung und einen neuen Versatz nach innen. Beide Zufallswerte
+weichen höchstens um 20 Prozent ihrer gesamten zulässigen Spanne vom vorherigen Wert ab.
 
 ## Render-Schritt
 
@@ -40,7 +41,7 @@ Framebuffer und erzeugt keine zusätzlichen `LineFrame`-Objekte.
 ## Helligkeit und Fading
 
 Helligkeit `0` entspricht der Grundfarbe `#FF6600`. Jede zusätzliche Überdeckung hellt das Pixel in
-Richtung Weiß auf. Beim Entfernen eines Frames sinkt der Wert, jedoch nie unter `0`.
+Richtung Weiss auf. Beim Entfernen eines Frames sinkt der Wert, jedoch nie unter `0`.
 
 Das visuelle Fading arbeitet direkt auf dem RGB-Buffer. Dadurch dunkeln alte Spuren flüssig bis
 Schwarz ab, ohne die vollständige History in jedem Render-Schritt neu aufzubauen.

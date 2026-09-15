@@ -44,11 +44,12 @@ class FakeScreen:
     Fake Pygame screen surface.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, size: tuple[int, int]) -> None:
         """
         Initialize recorded blits.
         """
 
+        self._size = size
         self.blit_calls: list[tuple[object, tuple[int, int]]] = []
 
     def blit(self, surface: object, position: tuple[int, int]) -> None:
@@ -58,19 +59,27 @@ class FakeScreen:
 
         self.blit_calls.append((surface, position))
 
+    def get_size(self) -> tuple[int, int]:
+        """
+        Return the fake screen size.
+        """
+
+        return self._size
+
 
 class FakeDisplay:
     """
     Fake Pygame display module.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, fullscreen_size: tuple[int, int]) -> None:
         """
         Initialize display calls.
         """
 
         self.caption = ""
         self.flip_count = 0
+        self.fullscreen_size = fullscreen_size
         self.set_mode_calls: list[tuple[tuple[int, int], int]] = []
         self.screens: list[FakeScreen] = []
 
@@ -93,7 +102,7 @@ class FakeDisplay:
         Record a display mode change.
         """
 
-        screen = FakeScreen()
+        screen = FakeScreen(self.fullscreen_size if size == (0, 0) else size)
         self.set_mode_calls.append((size, flags))
         self.screens.append(screen)
         return screen
@@ -247,12 +256,16 @@ class FakePygame:
     K_ESCAPE = 12
     MOUSEBUTTONDOWN = 13
 
-    def __init__(self, event_batches: list[list[FakeEvent]]) -> None:
+    def __init__(
+        self,
+        event_batches: list[list[FakeEvent]],
+        fullscreen_size: tuple[int, int] = (1600, 900),
+    ) -> None:
         """
         Initialize fake Pygame modules.
         """
 
-        self.display = FakeDisplay()
+        self.display = FakeDisplay(fullscreen_size)
         self.event = FakeEventModule(event_batches)
         self.font = FakeFontModule()
         self.image = FakeImageModule()
@@ -369,24 +382,95 @@ def test_main_uses_pygame_framebuffer_and_runtime_controls(
 
     monkeypatch.setattr(main, "load_pygame", lambda: fake_pygame)
     monkeypatch.setattr(main, "MylinerEngine", create_engine)
-    monkeypatch.setattr("sys.argv", ["myliner", "--speed", "20", "--seed", "7"])
+    monkeypatch.setattr(
+        "sys.argv",
+        ["myliner", "--lines", "2", "--speed", "20", "--thickness", "5", "--seed", "7"],
+    )
 
     main.main()
 
     assert fake_pygame.init_count == 1
     assert fake_pygame.display.caption == "Myliner"
     assert fake_pygame.image.frombuffer_calls[0][1] == (800, 450)
-    assert fake_pygame.display.set_mode_calls == [((800, 450), 0), ((1600, 900), 1)]
+    assert fake_pygame.display.set_mode_calls == [((800, 450), 0), ((0, 0), 1)]
     assert created_engines[0].add_line_count == 1
     assert created_engines[0].remove_line_count == 1
-    assert created_engines[0].thickness_changes == [4, 3]
+    assert created_engines[0].thickness_changes == [6, 5]
     assert fake_pygame.time.clocks[0].tick_calls == [21]
-    assert any(
-        "q/a: line count" in str(blit_call[0])
-        for blit_call in fake_pygame.display.screens[-1].blit_calls
-    )
+    rendered_help = [str(blit_call[0]) for blit_call in fake_pygame.display.screens[-1].blit_calls]
+    assert any("q/a: line count [2]" in line for line in rendered_help)
+    assert any("w/s: speed [21]" in line for line in rendered_help)
+    assert any("e/d: line thickness [5]" in line for line in rendered_help)
     assert fake_pygame.display.flip_count == 1
     assert fake_pygame.quit_count == 1
+
+
+def test_main_uses_current_monitor_size_for_fullscreen(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """
+    It uses the current monitor's native size and aspect ratio for mode changes.
+    """
+
+    fake_pygame = FakePygame(
+        [
+            [
+                FakeEvent(FakePygame.KEYDOWN, FakePygame.K_f),
+                FakeEvent(FakePygame.KEYDOWN, FakePygame.K_f),
+                FakeEvent(FakePygame.KEYDOWN, FakePygame.K_ESCAPE),
+            ]
+        ],
+        fullscreen_size=(1920, 1200),
+    )
+    created_engines: list[FakeEngine] = []
+
+    def create_engine(settings: main.MylinerSettings, *, seed: int | None = None) -> FakeEngine:
+        engine = FakeEngine(settings=settings, seed=seed)
+        created_engines.append(engine)
+        return engine
+
+    monkeypatch.setattr(main, "load_pygame", lambda: fake_pygame)
+    monkeypatch.setattr(main, "MylinerEngine", create_engine)
+    monkeypatch.setattr("sys.argv", ["myliner"])
+
+    main.main()
+
+    assert fake_pygame.display.set_mode_calls == [
+        ((800, 450), 0),
+        ((0, 0), FakePygame.FULLSCREEN),
+        ((800, 500), 0),
+    ]
+    assert [(engine.settings.width, engine.settings.height) for engine in created_engines] == [
+        (800, 450),
+        (1920, 1200),
+        (800, 500),
+    ]
+
+
+def test_main_starts_with_native_fullscreen_size(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    It initializes the engine with the native fullscreen surface size.
+    """
+
+    fake_pygame = FakePygame(
+        [[FakeEvent(FakePygame.KEYDOWN, FakePygame.K_ESCAPE)]],
+        fullscreen_size=(2560, 1440),
+    )
+    created_engines: list[FakeEngine] = []
+
+    def create_engine(settings: main.MylinerSettings, *, seed: int | None = None) -> FakeEngine:
+        engine = FakeEngine(settings=settings, seed=seed)
+        created_engines.append(engine)
+        return engine
+
+    monkeypatch.setattr(main, "load_pygame", lambda: fake_pygame)
+    monkeypatch.setattr(main, "MylinerEngine", create_engine)
+    monkeypatch.setattr("sys.argv", ["myliner", "--fullscreen"])
+
+    main.main()
+
+    assert fake_pygame.display.set_mode_calls == [((0, 0), FakePygame.FULLSCREEN)]
+    assert (created_engines[0].settings.width, created_engines[0].settings.height) == (2560, 1440)
 
 
 def test_main_quits_on_mouse_click(monkeypatch: pytest.MonkeyPatch) -> None:

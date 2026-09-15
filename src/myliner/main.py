@@ -20,15 +20,6 @@ from .engine import (
 )
 from .geometry import MAX_LONG_SIDE, calculate_graphics_size
 
-HELP_LINES = (
-    "q/a: line count",
-    "w/s: speed",
-    "e/d: line thickness",
-    "h: toggle help",
-    "f: toggle fullscreen",
-    "esc/click: quit",
-)
-
 
 @dataclass(slots=True)
 class RuntimeSettings:
@@ -131,7 +122,6 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
     pygame.init()
     pygame.display.set_caption("Myliner")
 
-    display_info = pygame.display.Info()
     fullscreen = arguments.fullscreen
     runtime_settings = RuntimeSettings(
         speed=arguments.speed,
@@ -139,19 +129,22 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
         thickness=arguments.thickness,
     )
     help_is_visible = False
-    width, height = calculate_window_size(
-        display_info.current_w,
-        display_info.current_h,
-        arguments.max_long_side,
-        fullscreen,
-    )
+    if fullscreen:
+        screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    else:
+        display_info = pygame.display.Info()
+        width, height = calculate_window_size(
+            display_info.current_w,
+            display_info.current_h,
+            arguments.max_long_side,
+            fullscreen=False,
+        )
+        screen = pygame.display.set_mode((width, height))
+
+    width, height = screen.get_size()
     engine = MylinerEngine(
         build_settings(arguments, width, height, runtime_settings),
         seed=arguments.seed,
-    )
-    screen = pygame.display.set_mode(
-        (width, height),
-        pygame.FULLSCREEN if fullscreen else 0,
     )
     surface = pygame.image.frombuffer(engine.rgb_buffer, (width, height), "RGB")
     clock = pygame.time.Clock()
@@ -165,19 +158,22 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
 
         nonlocal engine, height, screen, surface, width
 
-        width, height = calculate_window_size(
-            display_info.current_w,
-            display_info.current_h,
-            arguments.max_long_side,
-            fullscreen,
-        )
+        if fullscreen:
+            # A zero-sized mode uses the native size of the window's current display.
+            screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        else:
+            width, height = calculate_window_size(
+                width,
+                height,
+                arguments.max_long_side,
+                fullscreen=False,
+            )
+            screen = pygame.display.set_mode((width, height))
+
+        width, height = screen.get_size()
         engine = MylinerEngine(
             build_settings(arguments, width, height, runtime_settings),
             seed=arguments.seed,
-        )
-        screen = pygame.display.set_mode(
-            (width, height),
-            pygame.FULLSCREEN if fullscreen else 0,
         )
         surface = pygame.image.frombuffer(engine.rgb_buffer, (width, height), "RGB")
 
@@ -189,7 +185,15 @@ def main() -> None:  # pylint: disable=too-many-branches,too-many-locals,too-man
         if not help_is_visible:
             return
 
-        for line_index, help_line in enumerate(HELP_LINES):
+        help_lines = (
+            f"q/a: line count [{runtime_settings.line_count}]",
+            f"w/s: speed [{runtime_settings.speed}]",
+            f"e/d: line thickness [{runtime_settings.thickness}]",
+            "h: toggle help",
+            "f: toggle fullscreen",
+            "esc/click: quit",
+        )
+        for line_index, help_line in enumerate(help_lines):
             text_surface = font.render(help_line, True, (255, 255, 255))
             screen.blit(text_surface, (16, 16 + line_index * 28))
 

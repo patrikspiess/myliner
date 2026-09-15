@@ -2,6 +2,7 @@ const DEFAULT_COLOR = [255, 102, 0];
 const MAX_LINE_COUNT = 20;
 const MIN_LINE_COUNT = 1;
 const MIN_SPEED = 1;
+const MAX_MOVEMENT_CHANGE_RATIO = 0.2;
 
 /**
  * Moving border point used by the canvas animation.
@@ -55,8 +56,8 @@ class EdgePoint {
       hitSide,
       Math.max(0, Math.min(width - 1, nextX)),
       Math.max(0, Math.min(height - 1, nextY)),
-      randomInt(15, 165),
-      randomInt(offsetMinimum, offsetMaximum),
+      randomNearbyInt(this.angleDegrees, 15, 165),
+      randomNearbyInt(this.offset, offsetMinimum, offsetMaximum),
     );
   }
 }
@@ -85,6 +86,19 @@ function hitSideFor(xPosition, yPosition, width, height) {
  */
 function randomInt(minimum, maximum) {
   return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+}
+
+/**
+ * Return a random integer within 20 percent of the complete allowed range.
+ */
+function randomNearbyInt(currentValue, minimum, maximum) {
+  const maximumChange = Math.floor(
+    (maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO,
+  );
+  return randomInt(
+    Math.max(minimum, currentValue - maximumChange),
+    Math.min(maximum, currentValue + maximumChange),
+  );
 }
 
 /**
@@ -349,6 +363,7 @@ export class MylinerOverlay extends HTMLElement {
       ),
     );
     this.nextLineId += 1;
+    this.updateHelp();
   }
 
   /**
@@ -361,6 +376,7 @@ export class MylinerOverlay extends HTMLElement {
 
     this.lines.shift();
     this.clear();
+    this.updateHelp();
   }
 
   /**
@@ -368,6 +384,7 @@ export class MylinerOverlay extends HTMLElement {
    */
   speedUp() {
     this.speed = nextFibonacciSpeed(this.speed);
+    this.updateHelp();
   }
 
   /**
@@ -375,6 +392,7 @@ export class MylinerOverlay extends HTMLElement {
    */
   speedDown() {
     this.speed = previousFibonacciSpeed(this.speed);
+    this.updateHelp();
   }
 
   /**
@@ -382,6 +400,7 @@ export class MylinerOverlay extends HTMLElement {
    */
   increaseThickness() {
     this.thickness = this.thickness + 1;
+    this.updateHelp();
   }
 
   /**
@@ -389,6 +408,27 @@ export class MylinerOverlay extends HTMLElement {
    */
   decreaseThickness() {
     this.thickness = this.thickness - 1;
+    this.updateHelp();
+  }
+
+  /**
+   * Update the runtime help overlay with current settings.
+   */
+  updateHelp() {
+    if (!this.keyboardControls) {
+      this.help.textContent = "Use the Myliner view menu for controls.";
+      return;
+    }
+
+    const helpLines = [
+      `q/a: line count [${this.lines.length}]`,
+      `w/s: speed [${this.speed}]`,
+      `e/d: thickness [${this.thickness}]`,
+      "h: help",
+      "f: fullscreen",
+      this.clickToStop ? "Esc/click: quit" : "Esc: quit",
+    ];
+    this.help.textContent = helpLines.join("\n");
   }
 
   /**
@@ -396,20 +436,7 @@ export class MylinerOverlay extends HTMLElement {
    */
   toggleHelp() {
     this.help.hidden = !this.help.hidden;
-    if (!this.keyboardControls) {
-      this.help.textContent = "Use the Myliner view menu for controls.";
-      return;
-    }
-
-    const helpLines = [
-      "q/a: line count",
-      "w/s: speed",
-      "e/d: thickness",
-      "h: help",
-      "f: fullscreen",
-      this.clickToStop ? "Esc/click: quit" : "Esc: quit",
-    ];
-    this.help.textContent = helpLines.join("\n");
+    this.updateHelp();
   }
 
   /** Return the configured line count within runtime limits. */

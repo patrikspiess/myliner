@@ -284,11 +284,11 @@ def test_rgb_buffer_fades_without_underflow() -> None:
     """
 
     engine = MylinerEngine(MylinerSettings(20, 10, history=150), seed=1)
-    engine.rgb_buffer[0:3] = [2, 1, 0]
+    engine.rgb_buffer[0:6] = [3, 2, 1, 0, 255, 128]
 
     engine._fade_rgb_buffer()  # pylint: disable=protected-access
 
-    assert tuple(int(channel) for channel in engine.rgb_buffer[0:3]) == (0, 0, 0)
+    assert tuple(int(channel) for channel in engine.rgb_buffer[0:6]) == (1, 0, 0, 0, 253, 126)
 
 
 def test_removing_history_does_not_repaint_covered_pixels() -> None:

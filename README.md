@@ -45,7 +45,7 @@ Runtime controls:
 - `w/s`: select the next or previous Fibonacci speed.
 - `e/d`: increase or decrease line thickness.
 - `h`: toggle help.
-- `f`: toggle fullscreen.
+- `f`: toggle fullscreen on the monitor currently containing the window.
 - `Esc` or mouse click: quit.
 
 The engine can also be embedded directly:
