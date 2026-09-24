@@ -37,8 +37,12 @@ Die Standardwerte sind:
 ## Zeichnen und Fading
 
 Ein Frame verbindet die beiden aktuellen Endpunkte. Bereits belegte Pixel werden heller. Danach
-bewegen sich beide Endpunkte um ihren Versatz weiter. Erreicht ein Punkt den Rand, werden Richtung
-und Versatz neu gewählt, sodass er sich wieder in die Zeichenfläche bewegt. Die Änderung des Winkels und des Versatzes darf nicht mehr als 20% vom gesamtmöglichen Wert vom vorherigen Wert entfernt liegen.
+bewegen sich beide Endpunkte um ihren Versatz weiter.
+
+Erreicht ein Endpunkt den Rand, werden Richtung und Versatz neu gewählt:
+
+- Eintrittswinkel gleich Austrisswinkel, plus/minus 20 Grad, aber immer im Bereich von 20 und 160 Grad
+- Versatz ändern um max 20% des max. Versatzes
 
 Jede Linie verwaltet ihre eigene History. Frames ausserhalb dieser History werden entfernt und
 verringern Helligkeit und Abdeckung der betroffenen Pixel. Visuell dunkeln alte Spuren schrittweise

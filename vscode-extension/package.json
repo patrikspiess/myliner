@@ -2,9 +2,19 @@
   "name": "myliner-vscode",
   "displayName": "Myliner",
   "description": "Animated Myliner lines in a dedicated VS Code Explorer view.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "myliner",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrikspiess/myliner.git"
+  },
+  "files": [
+    "extension.js",
+    "media/",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "vscode": "^1.90.0"
   },

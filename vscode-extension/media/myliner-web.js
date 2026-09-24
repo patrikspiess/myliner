@@ -2,7 +2,10 @@ const DEFAULT_COLOR = [255, 102, 0];
 const MAX_LINE_COUNT = 20;
 const MIN_LINE_COUNT = 1;
 const MIN_SPEED = 1;
-const MAX_MOVEMENT_CHANGE_RATIO = 0.2;
+const MIN_BOUNCE_ANGLE = 20;
+const MAX_BOUNCE_ANGLE = 160;
+const MAX_BOUNCE_ANGLE_CHANGE = 20;
+const MAX_OFFSET_CHANGE_RATIO = 0.2;
 
 /**
  * Moving border point used by the canvas animation.
@@ -28,57 +31,92 @@ class EdgePoint {
   /** Advance the point and choose a new inward vector after an edge hit. */
   moved(width, height, offsetMinimum, offsetMaximum) {
     const angle = (this.angleDegrees * Math.PI) / 180;
-    let deltaX = Math.cos(angle) * this.offset;
-    let deltaY = Math.sin(angle) * this.offset;
+    const edgeDelta = Math.cos(angle) * this.offset;
+    const inwardDelta = Math.sin(angle) * this.offset;
+    let deltaX = edgeDelta;
+    let deltaY = inwardDelta;
 
     if (this.side === "right") {
-      deltaX *= -1;
-    }
-    if (this.side === "top") {
-      deltaY = Math.abs(deltaY);
-    }
-    if (this.side === "bottom") {
-      deltaY = -Math.abs(deltaY);
-    }
-    if (this.side === "left") {
-      deltaX = Math.abs(deltaX);
+      deltaX = -inwardDelta;
+      deltaY = edgeDelta;
+    } else if (this.side === "bottom") {
+      deltaY = -inwardDelta;
+    } else if (this.side === "left") {
+      deltaX = inwardDelta;
+      deltaY = edgeDelta;
     }
 
     const nextX = this.xPosition + deltaX;
     const nextY = this.yPosition + deltaY;
-    const hitSide = hitSideFor(nextX, nextY, width, height);
+    const borderHit = firstBorderHit(
+      this.xPosition,
+      this.yPosition,
+      deltaX,
+      deltaY,
+      width,
+      height,
+    );
 
-    if (!hitSide) {
+    if (!borderHit) {
       return new EdgePoint(this.side, nextX, nextY, this.angleDegrees, this.offset);
     }
 
+    const [hitSide, hitTime] = borderHit;
+    const hitHorizontalSide = hitSide === "top" || hitSide === "bottom";
+    const incidenceAngle = Math.round(
+      (Math.atan2(
+        hitHorizontalSide ? Math.abs(deltaY) : Math.abs(deltaX),
+        hitHorizontalSide ? deltaX : deltaY,
+      ) * 180) / Math.PI,
+    );
+    const maximumOffsetChange = Math.floor(offsetMaximum * MAX_OFFSET_CHANGE_RATIO);
+
     return new EdgePoint(
       hitSide,
-      Math.max(0, Math.min(width - 1, nextX)),
-      Math.max(0, Math.min(height - 1, nextY)),
-      randomNearbyInt(this.angleDegrees, 15, 165),
-      randomNearbyInt(this.offset, offsetMinimum, offsetMaximum),
+      Math.max(0, Math.min(width - 1, this.xPosition + deltaX * hitTime)),
+      Math.max(0, Math.min(height - 1, this.yPosition + deltaY * hitTime)),
+      randomInt(
+        Math.max(MIN_BOUNCE_ANGLE, incidenceAngle - MAX_BOUNCE_ANGLE_CHANGE),
+        Math.min(MAX_BOUNCE_ANGLE, incidenceAngle + MAX_BOUNCE_ANGLE_CHANGE),
+      ),
+      randomInt(
+        Math.max(offsetMinimum, this.offset - maximumOffsetChange),
+        Math.min(offsetMaximum, this.offset + maximumOffsetChange),
+      ),
     );
   }
 }
 
 /**
- * Return the edge hit by a point after movement, if any.
+ * Return the first border hit and the fraction of movement before impact.
  */
-function hitSideFor(xPosition, yPosition, width, height) {
-  if (xPosition <= 0) {
-    return "left";
+function firstBorderHit(xPosition, yPosition, deltaX, deltaY, width, height) {
+  let hitSide = null;
+  let hitTime = 1;
+
+  if (deltaX < 0 && xPosition + deltaX <= 0) {
+    hitSide = "left";
+    hitTime = -xPosition / deltaX;
+  } else if (deltaX > 0 && xPosition + deltaX >= width - 1) {
+    hitSide = "right";
+    hitTime = (width - 1 - xPosition) / deltaX;
   }
-  if (xPosition >= width - 1) {
-    return "right";
+
+  if (deltaY < 0 && yPosition + deltaY <= 0) {
+    const verticalHitTime = -yPosition / deltaY;
+    if (!hitSide || verticalHitTime < hitTime) {
+      hitSide = "top";
+      hitTime = verticalHitTime;
+    }
+  } else if (deltaY > 0 && yPosition + deltaY >= height - 1) {
+    const verticalHitTime = (height - 1 - yPosition) / deltaY;
+    if (!hitSide || verticalHitTime < hitTime) {
+      hitSide = "bottom";
+      hitTime = verticalHitTime;
+    }
   }
-  if (yPosition <= 0) {
-    return "top";
-  }
-  if (yPosition >= height - 1) {
-    return "bottom";
-  }
-  return null;
+
+  return hitSide ? [hitSide, hitTime] : null;
 }
 
 /**
@@ -86,19 +124,6 @@ function hitSideFor(xPosition, yPosition, width, height) {
  */
 function randomInt(minimum, maximum) {
   return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-}
-
-/**
- * Return a random integer within 20 percent of the complete allowed range.
- */
-function randomNearbyInt(currentValue, minimum, maximum) {
-  const maximumChange = Math.floor(
-    (maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO,
-  );
-  return randomInt(
-    Math.max(minimum, currentValue - maximumChange),
-    Math.min(maximum, currentValue + maximumChange),
-  );
 }
 
 /**

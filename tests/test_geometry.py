@@ -91,16 +91,16 @@ def test_edge_point_randomizes_angle_and_offset_when_hitting_border() -> None:
 
     assert moved_point.side is Side.LEFT
     assert moved_point.to_xy(10, 10) == (0, 5)
-    assert MIN_ANGLE <= moved_point.angle_degrees <= MAX_ANGLE
+    assert 20 <= moved_point.angle_degrees <= 160
     assert MIN_OFFSET <= moved_point.offset <= MAX_OFFSET
 
 
 @pytest.mark.parametrize(
     ("angle_degrees", "offset", "expected_ranges"),
     [
-        (MIN_ANGLE, MIN_OFFSET, [(15, 45), (5, 8)]),
-        (90, 10, [(60, 120), (7, 13)]),
-        (MAX_ANGLE, MAX_OFFSET, [(135, 165), (17, 20)]),
+        (MIN_ANGLE, MIN_OFFSET, [(20, 35), (5, 9)]),
+        (90, 10, [(70, 110), (6, 14)]),
+        (MAX_ANGLE, MAX_OFFSET, [(145, 160), (16, 20)]),
     ],
 )
 def test_edge_point_limits_randomized_movement_changes(
@@ -109,7 +109,7 @@ def test_edge_point_limits_randomized_movement_changes(
     expected_ranges: list[tuple[int, int]],
 ) -> None:
     """
-    It limits bounce changes to 20 percent of each complete allowed range.
+    It limits bounce angles to 20 degrees and offsets to 20 percent of the maximum.
     """
 
     random_generator = RecordingRandom()
@@ -126,6 +126,60 @@ def test_edge_point_limits_randomized_movement_changes(
     assert random_generator.randint_calls == expected_ranges
     assert moved_point.angle_degrees == expected_ranges[0][1]
     assert moved_point.offset == expected_ranges[1][1]
+
+
+@pytest.mark.parametrize(
+    ("point", "expected_side", "angle_range"),
+    [
+        (EdgePoint(Side.TOP, 98, 50, 30), Side.RIGHT, (40, 80)),
+        (EdgePoint(Side.BOTTOM, 1, 50, 150), Side.LEFT, (100, 140)),
+    ],
+)
+def test_edge_point_reflects_from_the_side_it_hits(
+    point: EdgePoint,
+    expected_side: Side,
+    angle_range: tuple[int, int],
+) -> None:
+    """
+    It bases the exit angle on the arrival angle at the new border.
+    """
+
+    random_generator = RecordingRandom()
+
+    moved_point = point.moved(width=100, height=100, random_generator=random_generator)
+
+    assert moved_point.side is expected_side
+    assert random_generator.randint_calls[0] == angle_range
+    assert moved_point.angle_degrees == angle_range[1]
+
+
+def test_edge_point_bounces_when_it_reaches_the_border_exactly() -> None:
+    """
+    It changes direction when movement ends exactly on an edge.
+    """
+
+    point = EdgePoint(side=Side.RIGHT, x_position=5, y_position=50, angle_degrees=90)
+
+    moved_point = point.moved(width=100, height=100, random_generator=Random(0))
+
+    assert moved_point.side is Side.LEFT
+    assert moved_point.x_position == 0
+
+
+def test_edge_point_bounces_from_the_first_border_reached() -> None:
+    """
+    It uses the first impact when one movement crosses two borders.
+    """
+
+    random_generator = RecordingRandom()
+    point = EdgePoint(side=Side.TOP, x_position=96, y_position=98, angle_degrees=30, offset=10)
+
+    moved_point = point.moved(width=100, height=100, random_generator=random_generator)
+
+    assert moved_point.side is Side.BOTTOM
+    assert moved_point.x_position == pytest.approx(97.732, abs=0.001)
+    assert moved_point.y_position == 99
+    assert random_generator.randint_calls == [(20, 50), (6, 14)]
 
 
 def test_edge_point_uses_required_default_offset_range() -> None:

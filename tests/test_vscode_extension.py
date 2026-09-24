@@ -3,6 +3,7 @@ Tests for the VS Code extension metadata and static assets.
 """
 
 import json
+import tomllib
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -16,6 +17,19 @@ def read_extension_asset(file_name: str) -> str:
     """
 
     return (EXTENSION_ROOT / file_name).read_text(encoding="utf-8")
+
+
+def test_project_and_extension_versions_match() -> None:
+    """
+    Keep the Python package and VS Code extension on the same release version.
+    """
+
+    with (PROJECT_ROOT / "pyproject.toml").open("rb") as project_file:
+        project = tomllib.load(project_file)
+
+    extension = json.loads(read_extension_asset("package.json"))
+
+    assert project["project"]["version"] == extension["version"]
 
 
 def test_vscode_extension_contributes_explorer_webview() -> None:

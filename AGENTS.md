@@ -11,6 +11,12 @@ Dü wählst selbständig geeignete Module wo nichts anderes angegeben. Du verwen
 
 Das Codewort 'code' verwendest du als Befehl um mit dem Coden bzw. weitercoden zu beginnen. Was nicht klar ist erfragst du. Wann immer du codest überprüfts du den gesamten Code auf Änderungen im AGENTS.md und den Requirements.
 
+# Versionierung
+
+Die Projektversion in `pyproject.toml` und die Version in `vscode-extension/package.json`
+müssen immer identisch sein. Ändere beide Versionen bei jeder Versionsanpassung gemeinsam und
+prüfe ihre Übereinstimmung vor Build, Installation und Release.
+
 # Coding Guidelines
 
 ## Tech stack

@@ -2,7 +2,11 @@
 Tests for the static browser demo assets.
 """
 
+import shutil
+import subprocess
 from pathlib import Path
+
+import pytest
 
 DEMO_ROOT = Path(__file__).resolve().parents[1] / "demo"
 
@@ -91,17 +95,58 @@ def test_web_component_supports_compact_transparent_embedding() -> None:
     assert "this.pixelBuffer[index + 3] - fadeStep" in source
 
 
-def test_web_component_limits_randomized_movement_changes() -> None:
+@pytest.mark.skipif(shutil.which("node") is None, reason="Node.js is required for the web test")
+def test_web_component_reflects_at_borders() -> None:
     """
-    It limits bounce changes to 20 percent of each complete allowed range.
+    It uses each impact angle and limits random changes at the screen border.
     """
 
-    source = read_demo_asset("myliner-web.js")
+    script = r"""
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
-    assert "const MAX_MOVEMENT_CHANGE_RATIO = 0.2;" in source
-    assert "randomNearbyInt(this.angleDegrees, 15, 165)" in source
-    assert "randomNearbyInt(this.offset, offsetMinimum, offsetMaximum)" in source
-    assert "(maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO" in source
+globalThis.HTMLElement = class {};
+globalThis.customElements = { define() {} };
+const source = readFileSync(process.argv[1], "utf8");
+const moduleUrl = "data:text/javascript;base64," +
+  Buffer.from(source + "\nexport { EdgePoint };").toString("base64");
+const { EdgePoint } = await import(moduleUrl);
+
+const testCases = [
+  ["top", 98, 50, 30, 5, "right", [40, 80], [5, 9]],
+  ["bottom", 1, 50, 150, 5, "left", [100, 140], [5, 9]],
+  ["right", 0, 50, 15, 5, "left", [20, 35], [5, 9]],
+  ["right", 5, 50, 90, 5, "left", [70, 110], [5, 9]],
+  ["right", 0, 50, 165, 20, "left", [145, 160], [16, 20]],
+  ["top", 96, 98, 30, 10, "bottom", [20, 50], [6, 14]],
+];
+
+for (const [side, xPosition, yPosition, angle, offset, expectedSide,
+  expectedAngleRange, expectedOffsetRange] of testCases) {
+  const point = new EdgePoint(side, xPosition, yPosition, angle, offset);
+
+  Math.random = () => 0;
+  const minimumBounce = point.moved(100, 100, 5, 20);
+  assert.equal(minimumBounce.side, expectedSide);
+  assert.equal(minimumBounce.angleDegrees, expectedAngleRange[0]);
+  assert.equal(minimumBounce.offset, expectedOffsetRange[0]);
+
+  Math.random = () => 0.999999999;
+  const maximumBounce = point.moved(100, 100, 5, 20);
+  assert.equal(maximumBounce.side, expectedSide);
+  assert.equal(maximumBounce.angleDegrees, expectedAngleRange[1]);
+  assert.equal(maximumBounce.offset, expectedOffsetRange[1]);
+}
+
+const cornerApproach = new EdgePoint("top", 96, 98, 30, 10).moved(100, 100, 5, 20);
+assert.ok(cornerApproach.xPosition < 99);
+assert.equal(cornerApproach.yPosition, 99);
+"""
+
+    subprocess.run(
+        ["node", "--input-type=module", "-e", script, str(DEMO_ROOT / "myliner-web.js")],
+        check=True,
+    )
 
 
 def test_web_component_uses_fibonacci_speed_controls_without_fixed_cap() -> None:

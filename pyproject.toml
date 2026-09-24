@@ -1,6 +1,6 @@
 [project]
 name = "myliner"
-version = "0.1.0"
+version = "0.1.6"
 description = "Animated moving-line graphics module."
 authors = [
     {name = "Patrik Spiess",email = "patrik.spiess@bluewin.ch"}

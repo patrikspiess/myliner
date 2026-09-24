@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import StrEnum
-from math import cos, radians, sin
+from math import atan2, cos, degrees, radians, sin
 from random import Random
 
 DEFAULT_OFFSET = 5
@@ -15,7 +15,10 @@ MAX_OFFSET = 20
 MAX_LONG_SIDE = 800
 MIN_ANGLE = 15
 MAX_ANGLE = 165
-MAX_MOVEMENT_CHANGE_RATIO = 0.2
+MIN_BOUNCE_ANGLE = 20
+MAX_BOUNCE_ANGLE = 160
+MAX_BOUNCE_ANGLE_CHANGE = 20
+MAX_OFFSET_CHANGE_RATIO = 0.2
 
 
 class Side(StrEnum):
@@ -95,12 +98,13 @@ class EdgePoint:
             A new edge point after movement.
         """
 
-        delta_x, delta_y = _movement_delta(self.side, self.angle_degrees, self.offset)
+        movement = _movement_delta(self.side, self.angle_degrees, self.offset)
+        delta_x, delta_y = movement
         next_x = self.x_position + delta_x
         next_y = self.y_position + delta_y
-        hit_side = _hit_side(next_x, next_y, width, height)
+        border_hit = _first_border_hit(self, movement, width, height)
 
-        if hit_side is None:
+        if border_hit is None:
             return EdgePoint(
                 side=self.side,
                 x_position=next_x,
@@ -109,21 +113,25 @@ class EdgePoint:
                 offset=self.offset,
             )
 
+        hit_side, hit_time = border_hit
+        if hit_side in (Side.TOP, Side.BOTTOM):
+            incidence_angle = round(degrees(atan2(abs(delta_y), delta_x)))
+        else:
+            incidence_angle = round(degrees(atan2(abs(delta_x), delta_y)))
+
+        maximum_offset_change = int(MAX_OFFSET * MAX_OFFSET_CHANGE_RATIO)
+
         return EdgePoint(
             side=hit_side,
-            x_position=_clamp(next_x, 0, width - 1),
-            y_position=_clamp(next_y, 0, height - 1),
-            angle_degrees=_random_nearby_value(
-                self.angle_degrees,
-                MIN_ANGLE,
-                MAX_ANGLE,
-                random_generator,
+            x_position=min(width - 1, max(0, self.x_position + delta_x * hit_time)),
+            y_position=min(height - 1, max(0, self.y_position + delta_y * hit_time)),
+            angle_degrees=random_generator.randint(
+                max(MIN_BOUNCE_ANGLE, incidence_angle - MAX_BOUNCE_ANGLE_CHANGE),
+                min(MAX_BOUNCE_ANGLE, incidence_angle + MAX_BOUNCE_ANGLE_CHANGE),
             ),
-            offset=_random_nearby_value(
-                self.offset,
-                MIN_OFFSET,
-                MAX_OFFSET,
-                random_generator,
+            offset=random_generator.randint(
+                max(MIN_OFFSET, self.offset - maximum_offset_change),
+                min(MAX_OFFSET, self.offset + maximum_offset_change),
             ),
         )
 
@@ -299,37 +307,42 @@ def _movement_delta(side: Side, angle_degrees: int, offset: int) -> tuple[float,
     return inward_delta, edge_delta
 
 
-def _random_nearby_value(
-    current_value: int,
-    minimum: int,
-    maximum: int,
-    random_generator: Random,
-) -> int:
+def _first_border_hit(
+    point: EdgePoint,
+    movement: tuple[float, float],
+    width: int,
+    height: int,
+) -> tuple[Side, float] | None:
     """
-    Return a random value within 20 percent of the complete allowed range.
-    """
-
-    maximum_change = int((maximum - minimum) * MAX_MOVEMENT_CHANGE_RATIO)
-    return random_generator.randint(
-        max(minimum, current_value - maximum_change),
-        min(maximum, current_value + maximum_change),
-    )
-
-
-def _hit_side(x_position: float, y_position: float, width: int, height: int) -> Side | None:
-    """
-    Return the side crossed by a moving point.
+    Return the first side reached and the fraction of movement before impact.
     """
 
-    if x_position < 0:
-        return Side.LEFT
-    if x_position > width - 1:
-        return Side.RIGHT
-    if y_position < 0:
-        return Side.TOP
-    if y_position > height - 1:
-        return Side.BOTTOM
-    return None
+    delta_x, delta_y = movement
+    hit_side: Side | None = None
+    hit_time = 1.0
+
+    if delta_x < 0 and point.x_position + delta_x <= 0:
+        hit_side = Side.LEFT
+        hit_time = -point.x_position / delta_x
+    elif delta_x > 0 and point.x_position + delta_x >= width - 1:
+        hit_side = Side.RIGHT
+        hit_time = (width - 1 - point.x_position) / delta_x
+
+    if delta_y < 0 and point.y_position + delta_y <= 0:
+        vertical_hit_time = -point.y_position / delta_y
+        if hit_side is None or vertical_hit_time < hit_time:
+            hit_side = Side.TOP
+            hit_time = vertical_hit_time
+    elif delta_y > 0 and point.y_position + delta_y >= height - 1:
+        vertical_hit_time = (height - 1 - point.y_position) / delta_y
+        if hit_side is None or vertical_hit_time < hit_time:
+            hit_side = Side.BOTTOM
+            hit_time = vertical_hit_time
+
+    if hit_side is None:
+        return None
+
+    return hit_side, hit_time
 
 
 def _clamp(value: float | int, minimum: int, maximum: int) -> int:

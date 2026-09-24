@@ -20,8 +20,9 @@ Jede Linie besitzt eine stabile `line_id`, zwei `EdgePoint`-Objekte und eine eig
 Pixelindizes. So kann der Engine die älteste Linie samt ihrer Spuren gezielt entfernen.
 
 Ein `EdgePoint` bewegt sich von einem Rand in die Zeichenfläche. Sobald er erneut einen Rand
-erreicht, erhält er eine neue Richtung und einen neuen Versatz nach innen. Beide Zufallswerte
-weichen höchstens um 20 Prozent ihrer gesamten zulässigen Spanne vom vorherigen Wert ab.
+erreicht, wird der Auftreffwinkel am zuerst erreichten Rand gespiegelt. Der Austrittswinkel darf um
+höchstens 20 Grad abweichen und liegt immer zwischen 20 und 160 Grad. Der Versatz ändert sich um
+höchstens 20 Prozent des maximalen Versatzes und bleibt im konfigurierten Bereich.
 
 ## Render-Schritt
 
